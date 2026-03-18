@@ -1,12 +1,34 @@
 import { useState } from 'react'
 import BoardView from './features/board/BoardView'
+import TaskModal from './features/board/TaskModal'
 import { useTasks } from './store/TaskContext'
 import Button from './components/ui/Button'
 import Toast from './components/ui/Toast'
 
 function App() {
   const { tasks, migrated, setMigrated, storageError } = useTasks()
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState(null)
+  const [toast, setToast] = useState(null)
+
+  function handleTaskClick(task) {
+    setSelectedTask(task)
+    setIsModalOpen(true)
+  }
+
+  function handleNewTask() {
+    setSelectedTask(null)
+    setIsModalOpen(true)
+  }
+
+  function handleModalClose() {
+    setIsModalOpen(false)
+    setSelectedTask(null)
+  }
+
+  function handleSuccess(message) {
+    setToast({ message, type: 'success' })
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -15,7 +37,7 @@ function App() {
         <h1 className="text-xl font-bold text-indigo-600">
           Team Workflow Board
         </h1>
-        <Button variant="primary" size="md">
+        <Button variant="primary" size="md" onClick={handleNewTask}>
           + New Task
         </Button>
       </header>
@@ -30,9 +52,17 @@ function App() {
 
         <BoardView
           tasks={tasks}
-          onTaskClick={(task) => setSelectedTask(task)}
+          onTaskClick={handleTaskClick}
         />
       </main>
+
+      {/* Task Modal */}
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        task={selectedTask}
+        onSuccess={handleSuccess}
+      />
 
       {/* Migration Toast */}
       {migrated && (
@@ -40,6 +70,15 @@ function App() {
           message="Your data was migrated to the latest version ✓"
           type="info"
           onClose={() => setMigrated(false)}
+        />
+      )}
+
+      {/* Action Toast */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>
