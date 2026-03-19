@@ -53,7 +53,7 @@ function FilterBar({ search, priority, sortBy, statuses, hasActiveFilters, updat
       <div className="min-w-[150px]">
         <Select
           id="priority-filter"
-          label={<span className="text-xs font-medium text-gray-500">Priority</span>}
+          label="Priority"
           value={priority}
           onChange={(e) => updateParam('priority', e.target.value)}
           options={priorityOptions}
@@ -64,7 +64,7 @@ function FilterBar({ search, priority, sortBy, statuses, hasActiveFilters, updat
       <div className="min-w-[150px]">
         <Select
           id="sort-filter"
-          label={<span className="text-xs font-medium text-gray-500">Sort By</span>}
+          label="Sort By"
           value={sortBy}
           onChange={(e) => updateParam('sortBy', e.target.value)}
           options={sortOptions}

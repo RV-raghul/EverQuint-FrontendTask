@@ -43,9 +43,12 @@ function TaskCard({ task, onClick }) {
 
         {/* Title */}
         <p
-          className="text-sm font-semibold text-gray-800 mb-2 cursor-pointer hover:text-indigo-600"
-          onClick={onClick}
-        >
+  className="text-sm font-semibold text-gray-800 mb-2 cursor-pointer hover:text-indigo-600"
+  onClick={(e) => {
+    e.stopPropagation()
+    onClick()
+  }}
+>
           {task.title}
         </p>
 

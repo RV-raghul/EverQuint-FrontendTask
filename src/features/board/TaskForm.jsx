@@ -8,9 +8,10 @@ import { STATUSES, PRIORITIES } from '../../utils/constants'
 const statusOptions = STATUSES.map((s) => ({ value: s, label: s }))
 const priorityOptions = PRIORITIES.map((p) => ({ value: p, label: p }))
 
-function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAddTag, handleRemoveTag, handleTagKeyDown, onSubmit, onCancel, isEdit }) {
+function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAddTag, handleRemoveTag, handleTagKeyDown, onSubmit, onCancel, onDelete, isEdit }) {
   return (
     <div className="flex flex-col gap-4">
+
       {/* Title */}
       <TextInput
         id="title"
@@ -91,14 +92,28 @@ function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAdd
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
-        <Button variant="secondary" size="md" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button variant="primary" size="md" onClick={onSubmit}>
-          {isEdit ? 'Save Changes' : 'Create Task'}
-        </Button>
+      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+
+        {/* Delete on left — only when editing */}
+        {isEdit ? (
+          <Button variant="destructive" size="md" onClick={onDelete}>
+            Delete Task
+          </Button>
+        ) : (
+          <div />
+        )}
+
+        {/* Cancel + Submit on right */}
+        <div className="flex gap-2">
+          <Button variant="secondary" size="md" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button variant="primary" size="md" onClick={onSubmit}>
+            {isEdit ? 'Save Changes' : 'Create Task'}
+          </Button>
+        </div>
       </div>
+
     </div>
   )
 }

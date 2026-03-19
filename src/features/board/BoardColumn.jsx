@@ -4,7 +4,7 @@ import TaskCard from './TaskCard'
 import { STATUS_COLORS } from '../../utils/constants'
 import Tag from '../../components/ui/Tag'
 
-function Column({ status, tasks, onTaskClick }) {
+function BoardColumn({ status, tasks, onTaskClick }) {
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
@@ -49,4 +49,4 @@ function Column({ status, tasks, onTaskClick }) {
   )
 }
 
-export default Column
+export default BoardColumn

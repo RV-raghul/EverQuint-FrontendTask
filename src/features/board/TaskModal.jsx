@@ -4,7 +4,7 @@ import useTaskForm from '../../hooks/useTaskForm'
 import { useTasks } from '../../store/TaskContext'
 
 function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
-  const { addTask, editTask } = useTasks()
+  const { addTask, editTask, deleteTask } = useTasks()
   const isEdit = Boolean(task)
 
   const {
@@ -34,8 +34,8 @@ function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
 
   function handleClose() {
     if (isDirty) {
-      const confirm = window.confirm('You have unsaved changes. Are you sure you want to close?')
-      if (!confirm) return
+      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to close?')
+      if (!confirmed) return
     }
     resetForm()
     onClose()
@@ -43,7 +43,6 @@ function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
 
   function handleSubmit() {
     if (!validateForm()) return
-
     if (isEdit) {
       editTask(task.id, form)
       onSuccess?.('Task updated successfully!')
@@ -51,9 +50,18 @@ function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
       addTask(form)
       onSuccess?.('Task created successfully!')
     }
-
     resetForm()
     onClose()
+  }
+
+  function handleDelete() {
+    const confirmed = window.confirm('Are you sure you want to delete this task?')
+    if (confirmed) {
+      deleteTask(task.id)
+      onSuccess?.('Task deleted!')
+      resetForm()
+      onClose()
+    }
   }
 
   return (
@@ -73,6 +81,7 @@ function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
         handleTagKeyDown={handleTagKeyDown}
         onSubmit={handleSubmit}
         onCancel={handleClose}
+        onDelete={handleDelete}
         isEdit={isEdit}
       />
     </Modal>

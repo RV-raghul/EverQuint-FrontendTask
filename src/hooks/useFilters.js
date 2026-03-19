@@ -4,11 +4,11 @@ import { useMemo } from 'react'
 function useFilters(tasks) {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // Read filters from URL
   const search = searchParams.get('search') || ''
   const priority = searchParams.get('priority') || ''
   const sortBy = searchParams.get('sortBy') || 'updatedAt'
   const statuses = searchParams.getAll('status')
+  const statusKey = statuses.join(',') // stable key for useMemo
 
   function updateParam(key, value) {
     const params = new URLSearchParams(searchParams)
@@ -24,7 +24,6 @@ function useFilters(tasks) {
     const params = new URLSearchParams(searchParams)
     const current = params.getAll('status')
     if (current.includes(status)) {
-      // Remove it
       params.delete('status')
       current.filter((s) => s !== status).forEach((s) => params.append('status', s))
     } else {
@@ -37,11 +36,9 @@ function useFilters(tasks) {
     setSearchParams({})
   }
 
-  // Filter + sort tasks
   const filteredTasks = useMemo(() => {
     let result = [...tasks]
 
-    // Filter by search
     if (search) {
       const lower = search.toLowerCase()
       result = result.filter(
@@ -51,28 +48,24 @@ function useFilters(tasks) {
       )
     }
 
-    // Filter by priority
     if (priority) {
       result = result.filter((t) => t.priority === priority)
     }
 
-    // Filter by statuses (multi select)
     if (statuses.length > 0) {
       result = result.filter((t) => statuses.includes(t.status))
     }
 
-    // Sort
     result.sort((a, b) => {
       if (sortBy === 'priority') {
         const order = { High: 0, Medium: 1, Low: 2 }
         return order[a.priority] - order[b.priority]
       }
-      // createdAt or updatedAt
       return new Date(b[sortBy]) - new Date(a[sortBy])
     })
 
     return result
-  }, [tasks, search, priority, statuses, sortBy])
+  }, [tasks, search, priority, statusKey, sortBy])
 
   const hasActiveFilters = search || priority || statuses.length > 0
 

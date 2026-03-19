@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import {
   DndContext,
-  closestCenter,
+  closestCorners,
   PointerSensor,
   useSensor,
   useSensors,
   DragOverlay,
 } from '@dnd-kit/core'
-import Column from './Column'
+import BoardColumn from './BoardColumn'
 import TaskCard from './TaskCard'
 import { STATUSES } from '../../utils/constants'
 import { useTasks } from '../../store/TaskContext'
@@ -34,7 +34,6 @@ function BoardView({ tasks, onTaskClick }) {
 
     if (!over) return
 
-    // over.id could be a column status or another task id
     const overStatus = STATUSES.includes(over.id)
       ? over.id
       : tasks.find((t) => t.id === over.id)?.status
@@ -47,13 +46,13 @@ function BoardView({ tasks, onTaskClick }) {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {STATUSES.map((status) => (
-          <Column
+          <BoardColumn
             key={status}
             status={status}
             tasks={tasks.filter((t) => t.status === status)}
@@ -62,7 +61,6 @@ function BoardView({ tasks, onTaskClick }) {
         ))}
       </div>
 
-      {/* Drag Overlay — shows ghost card while dragging */}
       <DragOverlay>
         {activeTask ? (
           <div className="rotate-2 scale-105">

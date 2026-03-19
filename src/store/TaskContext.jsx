@@ -36,6 +36,7 @@ export function TaskProvider({ children }) {
   const [tasks, dispatch] = useReducer(taskReducer, [])
   const [migrated, setMigrated] = useState(false)
   const [storageError, setStorageError] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -43,14 +44,14 @@ export function TaskProvider({ children }) {
     dispatch({ type: 'SET_TASKS', payload: loaded })
     if (wasMigrated) setMigrated(true)
     if (error) setStorageError(true)
+    setIsLoaded(true)
   }, [])
 
-  // Save to localStorage whenever tasks change
+  // Save to localStorage only after initial load
   useEffect(() => {
-    if (tasks.length >= 0) {
-      saveTasksToStorage(tasks)
-    }
-  }, [tasks])
+    if (!isLoaded) return
+    saveTasksToStorage(tasks)
+  }, [tasks, isLoaded])
 
   function addTask(data) {
     const task = createTask(data)
