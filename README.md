@@ -108,7 +108,6 @@ src/
 
 Used **React Context + useReducer** instead of Zustand or Redux because:
 - The app state is simple — just a list of tasks
-- No need for middleware or complex side effects
 - No extra dependencies
 
 ---
