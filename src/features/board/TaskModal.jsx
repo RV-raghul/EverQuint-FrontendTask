@@ -71,6 +71,7 @@ function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
       title={isEdit ? 'Edit Task' : 'Create New Task'}
     >
       <TaskForm
+        key={task?.id || 'new'}
         form={form}
         errors={errors}
         tagInput={tagInput}
