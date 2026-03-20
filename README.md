@@ -3,6 +3,13 @@
 A simplified Kanban-style task management app built with React and JavaScript.
 Inspired by tools like Trello and Jira.
 
+## LOOM VIDEO LINK
+https://www.loom.com/share/a29bdcff65874c31bfd6155da3d8c1d0
+
+## NETLIFY DEPLOYED LINK 
+https://ravi-raghul-team-workflow-board.netlify.app/
+
+
 ## 🚀 Getting Started
 
 ## 🔑 Key Decisions
