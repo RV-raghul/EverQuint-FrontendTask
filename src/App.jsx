@@ -109,6 +109,7 @@ function App() {
 
       {/* Task Modal */}
       <TaskModal
+         key={selectedTask?.id || 'new'}
         isOpen={isModalOpen}
         onClose={handleModalClose}
         task={selectedTask}
