@@ -1,4 +1,19 @@
-const colorMap = {
+interface TagProps {
+  label: string
+  color?: TagColor
+  onRemove?: () => void
+}
+
+export type TagColor =
+  | 'default'
+  | 'blue'
+  | 'green'
+  | 'yellow'
+  | 'red'
+  | 'purple'
+
+  
+const colorMap: Record<TagColor, string> = {
   default: 'bg-gray-100 text-gray-600',
   blue: 'bg-blue-100 text-blue-700',
   green: 'bg-green-100 text-green-700',
@@ -7,10 +22,19 @@ const colorMap = {
   purple: 'bg-purple-100 text-purple-700',
 }
 
-function Tag({ label, color = 'default', onRemove }) {
+function Tag({
+  label,
+  color = 'default',
+  onRemove,
+}: TagProps) {
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${colorMap[color] || colorMap.default}`}>
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+        colorMap[color] || colorMap.default
+      }`}
+    >
       {label}
+
       {onRemove && (
         <button
           onClick={onRemove}

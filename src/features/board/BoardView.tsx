@@ -6,15 +6,26 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
+  type DragStartEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
+
 import BoardColumn from './BoardColumn'
 import TaskCard from './TaskCard'
 import { STATUSES } from '../../utils/constants'
 import { useTasks } from '../../store/TaskContext'
 
-function BoardView({ tasks, onTaskClick }) {
+import type { Task } from '../../types/task'
+
+interface BoardViewProps {
+  tasks: Task[]
+  onTaskClick: (task: Task) => void
+}
+
+function BoardView({ tasks, onTaskClick }: BoardViewProps) {
   const { moveTask } = useTasks()
-  const [activeTask, setActiveTask] = useState(null)
+
+  const [activeTask, setActiveTask] = useState<Task | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -22,24 +33,27 @@ function BoardView({ tasks, onTaskClick }) {
     })
   )
 
-  function handleDragStart(event) {
+  function handleDragStart(event: DragStartEvent) {
     const { active } = event
+
     const task = tasks.find((t) => t.id === active.id)
-    setActiveTask(task)
+
+    setActiveTask(task ?? null)
   }
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
+
     setActiveTask(null)
 
     if (!over) return
 
-    const overStatus = STATUSES.includes(over.id)
-      ? over.id
+    const overStatus = STATUSES.includes(over.id as (typeof STATUSES)[number])
+      ? (over.id as (typeof STATUSES)[number])
       : tasks.find((t) => t.id === over.id)?.status
 
     if (overStatus && active.id !== over.id) {
-      moveTask(active.id, overStatus)
+      moveTask(String(active.id), overStatus)
     }
   }
 

@@ -1,41 +1,88 @@
+import type { ChangeEvent } from 'react'
+
 import { STATUSES, PRIORITIES } from '../../utils/constants'
 import Button from '../../components/ui/Button'
 import Select from '../../components/ui/Select'
 
+import type { TaskPriority, TaskStatus } from '../../types/task'
+
+type SortField = 'updatedAt' | 'createdAt' | 'priority'
+
+interface FilterBarProps {
+  search: string
+  priority: '' | TaskPriority
+  sortBy: SortField
+  statuses: TaskStatus[]
+  hasActiveFilters: boolean
+
+  updateParam: (key: string, value: string) => void
+  toggleStatus: (status: TaskStatus) => void
+  clearFilters: () => void
+}
+
 const priorityOptions = [
   { value: '', label: 'All Priorities' },
-  ...PRIORITIES.map((p) => ({ value: p, label: p })),
+  ...PRIORITIES.map((p) => ({
+    value: p,
+    label: p,
+  })),
 ]
 
 const sortOptions = [
-  { value: 'updatedAt', label: 'Last Updated' },
-  { value: 'createdAt', label: 'Created Date' },
-  { value: 'priority', label: 'Priority' },
+  {
+    value: 'updatedAt',
+    label: 'Last Updated',
+  },
+  {
+    value: 'createdAt',
+    label: 'Created Date',
+  },
+  {
+    value: 'priority',
+    label: 'Priority',
+  },
 ]
 
-function FilterBar({ search, priority, sortBy, statuses, hasActiveFilters, updateParam, toggleStatus, clearFilters }) {
+function FilterBar({
+  search,
+  priority,
+  sortBy,
+  statuses,
+  hasActiveFilters,
+  updateParam,
+  toggleStatus,
+  clearFilters,
+}: FilterBarProps) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 mb-6 flex flex-wrap gap-3 items-end">
-
       {/* Search */}
       <div className="flex flex-col gap-1 flex-1 min-w-[180px]">
-        <label className="text-xs font-medium text-gray-500">Search</label>
+        <label className="text-xs font-medium text-gray-500">
+          Search
+        </label>
+
         <input
           type="text"
           value={search}
-          onChange={(e) => updateParam('search', e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            updateParam('search', e.target.value)
+          }
           placeholder="Search title or description..."
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
-      {/* Status Multi Select */}
+      {/* Status */}
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-500">Status</label>
+        <label className="text-xs font-medium text-gray-500">
+          Status
+        </label>
+
         <div className="flex gap-2">
           {STATUSES.map((status) => (
             <button
               key={status}
+              type="button"
               onClick={() => toggleStatus(status)}
               className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
                 statuses.includes(status)
@@ -55,25 +102,33 @@ function FilterBar({ search, priority, sortBy, statuses, hasActiveFilters, updat
           id="priority-filter"
           label="Priority"
           value={priority}
-          onChange={(e) => updateParam('priority', e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            updateParam('priority', e.target.value)
+          }
           options={priorityOptions}
         />
       </div>
 
-      {/* Sort By */}
+      {/* Sort */}
       <div className="min-w-[150px]">
         <Select
           id="sort-filter"
           label="Sort By"
           value={sortBy}
-          onChange={(e) => updateParam('sortBy', e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            updateParam('sortBy', e.target.value)
+          }
           options={sortOptions}
         />
       </div>
 
-      {/* Clear Filters */}
+      {/* Clear */}
       {hasActiveFilters && (
-        <Button variant="destructive" size="md" onClick={clearFilters}>
+        <Button
+          variant="destructive"
+          size="md"
+          onClick={clearFilters}
+        >
           Clear Filters
         </Button>
       )}

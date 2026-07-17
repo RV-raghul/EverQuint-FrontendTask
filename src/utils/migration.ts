@@ -1,7 +1,8 @@
-import { SCHEMA_VERSION, STORAGE_KEY } from './constants'
+import { SCHEMA_VERSION, STORAGE_KEY } from './constants.ts'
+import type { Task } from '../types/task.js'
 
 // Sample seed tasks for first time load
-const seedTasks = [
+const seedTasks: Task[] = [
   {
     id: '1',
     title: 'Setup project structure',
@@ -40,64 +41,112 @@ const seedTasks = [
   },
 ]
 
-// Migration from v1 to v2
-// v1 didn't have tags or schemaVersion field
-function migrateV1ToV2(tasks) {
-  return tasks.map((task) => ({
-    ...task,
-    tags: task.tags || [],
-    schemaVersion: 2,
-  }))
+interface StorageData {
+  version: number
+  tasks: Task[]
 }
 
-export function loadTasksFromStorage() {
+interface LoadTasksResult {
+  tasks: Task[]
+  migrated: boolean
+  error?: boolean
+}
+
+// Migration from v1 to v2
+function migrateV1ToV2(tasks: Partial<Task>[]): Task[] {
+  return tasks.map(
+    (task) =>
+      ({
+        ...task,
+        tags: task.tags ?? [],
+        schemaVersion: 2,
+      }) as Task
+  )
+}
+
+export function loadTasksFromStorage(): LoadTasksResult {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
 
-    // First time — seed with sample data
+    // First time load
     if (!raw) {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ version: SCHEMA_VERSION, tasks: seedTasks })
+        JSON.stringify({
+          version: SCHEMA_VERSION,
+          tasks: seedTasks,
+        })
       )
-      return { tasks: seedTasks, migrated: false }
+
+      return {
+        tasks: seedTasks,
+        migrated: false,
+      }
     }
 
-    const parsed = JSON.parse(raw)
+    const parsed: unknown = JSON.parse(raw)
 
-    // v1 shape: tasks were stored as plain array
+    // Old v1 format (array)
     if (Array.isArray(parsed)) {
       const migrated = migrateV1ToV2(parsed)
+
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ version: SCHEMA_VERSION, tasks: migrated })
+        JSON.stringify({
+          version: SCHEMA_VERSION,
+          tasks: migrated,
+        })
       )
-      return { tasks: migrated, migrated: true }
+
+      return {
+        tasks: migrated,
+        migrated: true,
+      }
     }
 
-    // v1 shape: object but no version field
-    if (!parsed.version || parsed.version < 2) {
-      const migrated = migrateV1ToV2(parsed.tasks || [])
+    const storage = parsed as Partial<StorageData>
+
+    // Old object format without version
+    if (!storage.version || storage.version < 2) {
+      const migrated = migrateV1ToV2(storage.tasks ?? [])
+
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ version: SCHEMA_VERSION, tasks: migrated })
+        JSON.stringify({
+          version: SCHEMA_VERSION,
+          tasks: migrated,
+        })
       )
-      return { tasks: migrated, migrated: true }
+
+      return {
+        tasks: migrated,
+        migrated: true,
+      }
     }
 
-    // Already v2 — return as is
-    return { tasks: parsed.tasks || [], migrated: false }
+    return {
+      tasks: storage.tasks ?? [],
+      migrated: false,
+    }
   } catch (err) {
     console.error('Storage read failed:', err)
-    return { tasks: [], migrated: false, error: true }
+
+    return {
+      tasks: [],
+      migrated: false,
+      error: true,
+    }
   }
 }
 
-export function saveTasksToStorage(tasks) {
+export function saveTasksToStorage(tasks: Task[]): void {
   try {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ version: SCHEMA_VERSION, tasks })
+      JSON.stringify({
+        version: SCHEMA_VERSION,
+        tasks,
+      })
     )
   } catch (err) {
     console.error('Storage write failed:', err)

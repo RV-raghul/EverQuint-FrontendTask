@@ -2,9 +2,23 @@ import Modal from '../../components/ui/Modal'
 import TaskForm from './TaskForm'
 import useTaskForm from '../../hooks/useTaskForm'
 import { useTasks } from '../../store/TaskContext'
+import type { Task } from '../../types/task'
 
-function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
+interface TaskModalProps {
+  isOpen: boolean
+  onClose: () => void
+  task?: Task | null
+  onSuccess?: (message: string) => void
+}
+
+function TaskModal({
+  isOpen,
+  onClose,
+  task = null,
+  onSuccess,
+}: TaskModalProps) {
   const { addTask, editTask, deleteTask } = useTasks()
+
   const isEdit = Boolean(task)
 
   const {
@@ -27,35 +41,46 @@ function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
           status: task.status,
           priority: task.priority,
           assignee: task.assignee,
-          tags: task.tags || [],
+          tags: task.tags ?? [],
         }
       : null
   )
 
   function handleClose() {
     if (isDirty) {
-      const confirmed = window.confirm('You have unsaved changes. Are you sure you want to close?')
+      const confirmed = window.confirm(
+        'You have unsaved changes. Are you sure you want to close?'
+      )
+
       if (!confirmed) return
     }
+
     resetForm()
     onClose()
   }
 
   function handleSubmit() {
     if (!validateForm()) return
-    if (isEdit) {
+
+    if (isEdit && task) {
       editTask(task.id, form)
       onSuccess?.('Task updated successfully!')
     } else {
       addTask(form)
       onSuccess?.('Task created successfully!')
     }
+
     resetForm()
     onClose()
   }
 
   function handleDelete() {
-    const confirmed = window.confirm('Are you sure you want to delete this task?')
+    if (!task) return
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this task?'
+    )
+
     if (confirmed) {
       deleteTask(task.id)
       onSuccess?.('Task deleted!')
@@ -71,7 +96,7 @@ function TaskModal({ isOpen, onClose, task = null, onSuccess }) {
       title={isEdit ? 'Edit Task' : 'Create New Task'}
     >
       <TaskForm
-        key={task?.id || 'new'}
+        key={task?.id ?? 'new'}
         form={form}
         errors={errors}
         tagInput={tagInput}

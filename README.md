@@ -1,6 +1,6 @@
 # Team Workflow Board
 
-A simplified Kanban-style task management app built with React and JavaScript.
+A simplified Kanban-style task management app built with React and TypeScript.
 Inspired by tools like Trello and Jira.
 
 ## LOOM VIDEO LINK
@@ -13,9 +13,6 @@ https://ravi-raghul-team-workflow-board.netlify.app/
 ## 🚀 Getting Started
 
 ## 🔑 Key Decisions
-
-### JavaScript over TypeScript
-The task specified TypeScript but I am currently in the process of learning TypeScript and have not yet fully grasped the complete syntax. To keep the focus on architecture, component design and logic rather than struggling with type definitions, I chose to use JavaScript for this task. All data shapes are well defined and consistent across `constants.js` and `helpers.js`, which demonstrates the same structural thinking that TypeScript enforces. Given more time, migrating this codebase to TypeScript would be a straightforward next step.
 
 ### Drag and Drop
 Used `@dnd-kit` over `react-beautiful-dnd` because:
@@ -65,50 +62,57 @@ npm run test
 | Tool | Purpose |
 |------|---------|
 | React 19 | UI framework |
-| JavaScript (ES6+) | Language (task specified TS, using JS for simplicity) |
+| TypeScript 7 | Language |
 | Vite 8 | Build tool |
 | Tailwind CSS v4 | Styling |
 | @dnd-kit | Drag and drop |
 | React Router v7 | URL-based filter sync |
 | date-fns | Relative timestamps |
-| Vitest + RTL | Testing |
+| Vitest + React Testing Library (RTL) | Testing |
+
 
 ### Folder Structure
 ```
 src/
 ├── components/
 │   └── ui/               # Reusable UI components
-│       ├── Button.jsx
-│       ├── TextInput.jsx
-│       ├── TextArea.jsx
-│       ├── Select.jsx
-│       ├── Tag.jsx
-│       ├── Card.jsx
-│       ├── Modal.jsx
-│       └── Toast.jsx
+│       ├── Button.tsx
+│       ├── TextInput.tsx
+│       ├── TextArea.tsx
+│       ├── Select.tsx
+│       ├── Tag.tsx
+│       ├── Card.tsx
+│       ├── Modal.tsx
+│       ├── Toast.tsx
+│       └── index.ts
 ├── features/
 │   └── board/            # Board feature components
-│       ├── BoardView.jsx
-│       ├── BoardColumn.jsx
-│       ├── TaskCard.jsx
-│       ├── TaskModal.jsx
-│       └── TaskForm.jsx
+│       ├── BoardView.tsx
+│       ├── BoardColumn.tsx
+│       ├── TaskCard.tsx
+│       ├── FilterBar.tsx
+│       ├── TaskModal.tsx
+│       └── TaskForm.tsx
 ├── hooks/                # Custom hooks
-│   ├── useFilters.js
-│   └── useTaskForm.js
+│   ├── useFilters.ts
+│   └── useTaskForm.ts
 ├── store/                # Global state
-│   └── TaskContext.jsx
+│   └── TaskContext.tsx
+├── types/
+│   └── task.ts
 ├── utils/                # Utilities
-│   ├── constants.js
-│   ├── helpers.js
-│   └── migration.js
-├── tests/                # Tests
+│   ├── constants.ts
+│   ├── helpers.ts
+│   └── migration.ts
+├── tests/                # Tests (unchanged for now)
 │   ├── setup.js
 │   ├── Button.test.jsx
 │   ├── helpers.test.js
 │   └── useTaskForm.test.js
-├── App.jsx
-└── main.jsx
+├── App.tsx
+└── main.tsx
+
+
 ```
 
 ### State Management
@@ -121,7 +125,6 @@ Used **React Context + useReducer** instead of Zustand or Redux because:
 
 ## ⚠️ Known Limitations & Trade-offs
 
-- **No TypeScript** — used JavaScript instead as noted above
 - **No backend** — data is stored in localStorage only
 - **No user authentication** — single user app
 - **No drag reordering within columns** — only cross-column dragging
@@ -144,9 +147,3 @@ understanding of the task requirements and to produce a better output.
   empty state on mount
 ---
 
-## 📝 What I'd Do Next
-
-- Add TypeScript (After Learning)
-- Add due dates to tasks
-- Add unit tests for TaskContext
-- Add a backend with a REST API

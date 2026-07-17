@@ -1,11 +1,20 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+
 import Card from '../../components/ui/Card'
 import Tag from '../../components/ui/Tag'
+
 import { PRIORITY_COLORS } from '../../utils/constants'
 import { formatRelativeTime } from '../../utils/helpers'
 
-function TaskCard({ task, onClick }) {
+import type { Task } from '../../types/task'
+
+interface TaskCardProps {
+  task: Task
+  onClick: () => void
+}
+
+function TaskCard({ task, onClick }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -15,7 +24,7 @@ function TaskCard({ task, onClick }) {
     isDragging,
   } = useSortable({ id: task.id })
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
@@ -38,30 +47,38 @@ function TaskCard({ task, onClick }) {
             <circle cx="11" cy="8" r="1.2" />
             <circle cx="11" cy="12" r="1.2" />
           </svg>
+
           <span className="text-xs">drag</span>
         </div>
 
         {/* Title */}
         <p
-  className="text-sm font-semibold text-gray-800 mb-2 cursor-pointer hover:text-indigo-600"
-  onClick={(e) => {
-    e.stopPropagation()
-    onClick()
-  }}
->
+          className="text-sm font-semibold text-gray-800 mb-2 cursor-pointer hover:text-indigo-600"
+          onClick={(e: React.MouseEvent<HTMLParagraphElement>) => {
+            e.stopPropagation()
+            onClick()
+          }}
+        >
           {task.title}
         </p>
 
         {/* Priority Badge */}
         <div className="mb-2">
-          <Tag label={task.priority} color={PRIORITY_COLORS[task.priority]} />
+          <Tag
+            label={task.priority}
+            color={PRIORITY_COLORS[task.priority]}
+          />
         </div>
 
         {/* Tags */}
-        {task.tags?.length > 0 && (
+        {task.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {task.tags.map((tag) => (
-              <Tag key={tag} label={tag} color="default" />
+              <Tag
+                key={tag}
+                label={tag}
+                color="default"
+              />
             ))}
           </div>
         )}
@@ -71,6 +88,7 @@ function TaskCard({ task, onClick }) {
           <span className="text-xs text-gray-400">
             {task.assignee || 'Unassigned'}
           </span>
+
           <span className="text-xs text-gray-400">
             {formatRelativeTime(task.updatedAt)}
           </span>

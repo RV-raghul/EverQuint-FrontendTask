@@ -1,7 +1,19 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 
-function Modal({ isOpen, onClose, title, children }) {
-  const modalRef = useRef(null)
+interface ModalProps {
+  isOpen: boolean
+  onClose: () => void
+  title: string
+  children: ReactNode
+}
+
+function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+}: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -10,11 +22,19 @@ function Modal({ isOpen, onClose, title, children }) {
   }, [isOpen])
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose()
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
     }
-    if (isOpen) window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown)
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
   }, [isOpen, onClose])
 
   if (!isOpen) return null
@@ -31,12 +51,16 @@ function Modal({ isOpen, onClose, title, children }) {
         ref={modalRef}
         tabIndex={-1}
         className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6 focus:outline-none"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 id="modal-title" className="text-lg font-semibold text-gray-800">
+          <h2
+            id="modal-title"
+            className="text-lg font-semibold text-gray-800"
+          >
             {title}
           </h2>
+
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-xl focus:outline-none"
@@ -45,6 +69,7 @@ function Modal({ isOpen, onClose, title, children }) {
             ×
           </button>
         </div>
+
         {children}
       </div>
     </div>

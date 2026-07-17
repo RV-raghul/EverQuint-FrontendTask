@@ -1,24 +1,63 @@
+import type { ChangeEvent, KeyboardEvent, Dispatch, SetStateAction } from 'react'
+
 import TextInput from '../../components/ui/TextInput'
 import TextArea from '../../components/ui/TextArea'
 import Select from '../../components/ui/Select'
 import Button from '../../components/ui/Button'
 import Tag from '../../components/ui/Tag'
 import { STATUSES, PRIORITIES } from '../../utils/constants'
+import type { TaskFormData } from '../../types/task'
 
 const statusOptions = STATUSES.map((s) => ({ value: s, label: s }))
 const priorityOptions = PRIORITIES.map((p) => ({ value: p, label: p }))
 
-function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAddTag, handleRemoveTag, handleTagKeyDown, onSubmit, onCancel, onDelete, isEdit }) {
+interface TaskFormProps {
+  form: TaskFormData
+  errors: Partial<Record<keyof TaskFormData, string>>
+  tagInput: string
+  setTagInput: Dispatch<SetStateAction<string>>
+
+  handleChange: <K extends keyof TaskFormData>(
+    field: K,
+    value: TaskFormData[K]
+  ) => void
+
+  handleAddTag: () => void
+  handleRemoveTag: (tag: string) => void
+  handleTagKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void
+
+  onSubmit: () => void
+  onCancel: () => void
+  onDelete: () => void
+
+  isEdit: boolean
+}
+
+function TaskForm({
+  form,
+  errors,
+  tagInput,
+  setTagInput,
+  handleChange,
+  handleAddTag,
+  handleRemoveTag,
+  handleTagKeyDown,
+  onSubmit,
+  onCancel,
+  onDelete,
+  isEdit,
+}: TaskFormProps) {
   return (
     <div className="flex flex-col gap-4">
-
       {/* Title */}
       <TextInput
         id="title"
         label="Title *"
         placeholder="Enter task title"
         value={form.title}
-        onChange={(e) => handleChange('title', e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          handleChange('title', e.target.value)
+        }
         error={errors.title}
       />
 
@@ -28,7 +67,9 @@ function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAdd
         label="Description"
         placeholder="Enter task description"
         value={form.description}
-        onChange={(e) => handleChange('description', e.target.value)}
+        onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+          handleChange('description', e.target.value)
+        }
         rows={3}
       />
 
@@ -38,15 +79,20 @@ function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAdd
           id="status"
           label="Status *"
           value={form.status}
-          onChange={(e) => handleChange('status', e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            handleChange('status', e.target.value)
+          }
           options={statusOptions}
           error={errors.status}
         />
+
         <Select
           id="priority"
           label="Priority *"
           value={form.priority}
-          onChange={(e) => handleChange('priority', e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            handleChange('priority', e.target.value)
+          }
           options={priorityOptions}
           error={errors.priority}
         />
@@ -58,25 +104,38 @@ function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAdd
         label="Assignee"
         placeholder="Enter assignee name"
         value={form.assignee}
-        onChange={(e) => handleChange('assignee', e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          handleChange('assignee', e.target.value)
+        }
       />
 
       {/* Tags */}
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">Tags</label>
+        <label className="text-sm font-medium text-gray-700">
+          Tags
+        </label>
+
         <div className="flex gap-2">
           <input
             type="text"
             value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setTagInput(e.target.value)
+            }
             onKeyDown={handleTagKeyDown}
             placeholder="Type a tag and press Enter"
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <Button variant="secondary" size="md" onClick={handleAddTag}>
+
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={handleAddTag}
+          >
             Add
           </Button>
         </div>
+
         {form.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-1">
             {form.tags.map((tag) => (
@@ -93,27 +152,36 @@ function TaskForm({ form, errors, tagInput, setTagInput, handleChange, handleAdd
 
       {/* Actions */}
       <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-
-        {/* Delete on left — only when editing */}
         {isEdit ? (
-          <Button variant="destructive" size="md" onClick={onDelete}>
+          <Button
+            variant="destructive"
+            size="md"
+            onClick={onDelete}
+          >
             Delete Task
           </Button>
         ) : (
           <div />
         )}
 
-        {/* Cancel + Submit on right */}
         <div className="flex gap-2">
-          <Button variant="secondary" size="md" onClick={onCancel}>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={onCancel}
+          >
             Cancel
           </Button>
-          <Button variant="primary" size="md" onClick={onSubmit}>
+
+          <Button
+            variant="primary"
+            size="md"
+            onClick={onSubmit}
+          >
             {isEdit ? 'Save Changes' : 'Create Task'}
           </Button>
         </div>
       </div>
-
     </div>
   )
 }
